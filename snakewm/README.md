@@ -2,7 +2,7 @@
 snakewm is a basic window manager built using the pygame and pygame-gui packages.
 
 **Keyboard-mappings:**
-+ Open/close App Menu: `SUPER`
++ Open/close App Menu: `HOME`
 + Exit snakewm: `ALT+ESC`
 + Toggle dynamic backgrounds: `ALT+D`
 + snakepaint mappings
