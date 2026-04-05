@@ -11,3 +11,6 @@ add pip
 add nano
 add smth else
 add acceleration
+### how to build
+just build it no matter how
+### made by njq8
