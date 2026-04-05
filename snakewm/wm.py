@@ -173,7 +173,7 @@ class SnakeWM:
 
             for event in pygame.event.get():
                 if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_LSUPER:
+                    if event.key == pygame.K_HOME:
                         if self.APPMENU is None:
                             # open app menu
                             self.APPMENU = AppMenuPanel(
