@@ -5,9 +5,11 @@ def roundline(srf, color, start, end, radius=1):
     dx = end[0] - start[0]
     dy = end[1] - start[1]
     distance = max(abs(dx), abs(dy))
+    if distance == 0:
+        return
     for i in range(distance):
-        x = int(start[0] + float(i) / distance * dx)
-        y = int(start[1] + float(i) / distance * dy)
+        x = int(start[0] + dx * i / distance)
+        y = int(start[1] + dy * i / distance)
         pygame.draw.circle(srf, color, (x, y), radius)
 
 
@@ -23,14 +25,11 @@ class SnakePaint:
 
     def on_init(self):
         pygame.init()
-
         os.putenv("SDL_FBDEV", "/dev/fb0")
         pygame.display.init()
-
         self.DIMS = (pygame.display.Info().current_w, pygame.display.Info().current_h)
-
         self._display_surf = pygame.display.set_mode(self.DIMS, pygame.FULLSCREEN)
-
+        self._display_surf.fill((0, 0, 0))
         self._running = True
 
     def on_execute(self):
@@ -40,41 +39,32 @@ class SnakePaint:
     def start(self):
         while self._running:
             keys = pygame.key.get_pressed()
-            e = pygame.event.wait()
             if keys[pygame.K_ESCAPE]:
                 self._running = False
-            if e.type == pygame.KEYUP:
-                if e.key == pygame.K_d:
-                    self.eraser = not self.eraser
-            pygame.event.pump()
-            if e.type == pygame.MOUSEBUTTONDOWN:
-                if self.eraser:
-                    self.color = (0, 0, 0)
-                else:
-                    self.color = (
+
+            for e in pygame.event.get():
+                if e.type == pygame.QUIT:
+                    self._running = False
+
+                elif e.type == pygame.KEYUP:
+                    if e.key == pygame.K_d:
+                        self.eraser = not self.eraser
+
+                elif e.type == pygame.MOUSEBUTTONDOWN:
+                    self.draw_on = True
+                    self.color = (0, 0, 0) if self.eraser else (
                         random.randrange(256),
                         random.randrange(256),
                         random.randrange(256),
                     )
-                pygame.draw.circle(self._display_surf, self.color, e.pos, self.radius)
-                self.draw_on = True
-            elif e.type == pygame.MOUSEBUTTONDOWN and self.eraser is True:
-                self.color = (0, 0, 0)
-                pygame.draw.circle(self._display_surf, self.color, e.pos, self.radius)
-                self.draw_on = True
-            if e.type == pygame.MOUSEBUTTONUP:
-                self.draw_on = False
-            if e.type == pygame.MOUSEMOTION:
-                if self.draw_on:
-                    pygame.draw.circle(
-                        self._display_surf, self.color, e.pos, self.radius
-                    )
-                    roundline(
-                        self._display_surf,
-                        self.color,
-                        e.pos,
-                        self.last_pos,
-                        self.radius,
-                    )
-                self.last_pos = e.pos
+                    self.last_pos = e.pos
+                    pygame.draw.circle(self._display_surf, self.color, e.pos, self.radius)
+
+                elif e.type == pygame.MOUSEBUTTONUP:
+                    self.draw_on = False
+
+                elif e.type == pygame.MOUSEMOTION and self.draw_on:
+                    roundline(self._display_surf, self.color, self.last_pos, e.pos, self.radius)
+                    self.last_pos = e.pos
+
             pygame.display.flip()
