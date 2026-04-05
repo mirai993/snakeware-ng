@@ -10,3 +10,4 @@ add package manager
 add pip
 add nano
 add smth else
+add acceleration
